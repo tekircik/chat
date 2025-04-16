@@ -22,8 +22,11 @@ export const Greeting = () => {
         transition={{ delay: 0.6 }}
         className="text-xl sm:text-2xl text-zinc-500"
       >
-        What's on your mind?
+        What&apos;s on your mind?
       </motion.div>
+      <p>
+        Welcome to the AI Chatbot! To start, just start typing below.
+      </p>
     </div>
   );
 };

@@ -2,54 +2,68 @@ import { auth } from '@/app/(auth)/auth';
 import { getChatById, getMessagesByChatId, getVotesByChatId } from '@/lib/db/queries';
 import type { Attachment, UIMessage } from 'ai';
 import type { DBMessage } from '@/lib/db/schema';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const id = params.id;
-
-  if (!id) {
-    return new Response('Missing chat id', { status: 400 });
-  }
+export async function GET(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) {
+    const { id } = await params;
+    if (!id) return new Response('Missing chat id', { status: 400 });
 
   const session = await auth();
 
-  if (!session || !session.user) {
-    return new Response('Unauthorized', { status: 401 });
+  // Check for authenticated user
+  if (!session?.user?.id) {
+    return new NextResponse('Unauthorized', { status: 401 });
   }
 
   try {
     // Get chat details
     const chat = await getChatById({ id });
-
     if (!chat) {
-      return new Response('Chat not found', { status: 404 });
+      return new NextResponse('Chat not found', { status: 404 });
     }
 
-    // Check permissions
+    // Check permissions: only owner can access private chats
     if (chat.visibility === 'private' && chat.userId !== session.user.id) {
-      return new Response('Unauthorized', { status: 401 });
+      // 403 Forbidden is more appropriate when authenticated but lacking permissions
+      return new NextResponse('Forbidden', { status: 403 });
     }
 
-    // Get messages and votes
-    const messagesFromDb = await getMessagesByChatId({ id });
-    const votes = await getVotesByChatId({ id });
+    // Fetch messages and votes concurrently
+    const [messagesFromDb, votes] = await Promise.all([
+        getMessagesByChatId({ id }),
+        getVotesByChatId({ id })
+    ]);
 
     // Convert DB messages to UI messages
-    const messages: Array<UIMessage> = messagesFromDb.map((message: DBMessage) => ({
-      id: message.id,
-      parts: message.parts as UIMessage['parts'],
-      role: message.role as UIMessage['role'],
-      content: '',
-      createdAt: message.createdAt,
-      experimental_attachments: (message.attachments as Array<Attachment>) ?? [],
-    }));
+    // Ensure DBMessage structure is compatible with UIMessage expectations
+    const messages: Array<UIMessage> = messagesFromDb.map((message: DBMessage) => {
+        // Explicitly construct the UIMessage object
+        const uiMessage: UIMessage = {
+            id: message.id,
+            // Cast 'parts'. Add validation if DB type might not match.
+            parts: message.parts as UIMessage['parts'],
+             // Cast 'role'. Add validation if DB type might not match.
+            role: message.role as UIMessage['role'],
+            // 'content' might need specific handling based on UIMessage definition.
+            // Setting to empty string as per original code.
+            content: '',
+            createdAt: message.createdAt,
+            // Cast 'attachments'. Add validation if DB type might not match.
+            // Use nullish coalescing for safety.
+            experimental_attachments: (message.attachments as Array<Attachment> | undefined | null) ?? [],
+        };
+        return uiMessage;
+    });
 
-    return Response.json({ 
-      messages,
-      votes
-    }, { status: 200 });
-    
+    // Return data using NextResponse
+    return NextResponse.json({ messages, votes }); // Status 200 is default
+
   } catch (error) {
     console.error('Error fetching chat data:', error);
-    return new Response('An error occurred while processing your request', { status: 500 });
+    // Use NextResponse for error response
+    return new NextResponse('An error occurred while processing your request', { status: 500 });
   }
 }

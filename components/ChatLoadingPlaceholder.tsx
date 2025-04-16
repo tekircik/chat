@@ -8,9 +8,9 @@ export function ChatLoadingPlaceholder() {
     <div className="flex flex-col min-w-0 h-dvh bg-background w-full">
       {/* Chat header */}
       <header className="flex sticky top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2">
-        <div className="h-8 w-8 rounded-full bg-muted-foreground/10 animate-pulse"></div>
+        <div className="size-8 rounded-full bg-muted-foreground/10 animate-pulse"></div>
         <div className="h-5 w-32 bg-muted-foreground/20 rounded-md animate-pulse"></div>
-        <div className="ml-auto h-8 w-8 rounded-full bg-muted-foreground/10 animate-pulse"></div>
+        <div className="ml-auto size-8 rounded-full bg-muted-foreground/10 animate-pulse"></div>
       </header>
 
       {/* Chat messages container */}
@@ -232,9 +232,9 @@ export function ChatLoadingPlaceholder() {
       {/* Input area */}
       <div className="mx-auto px-4 bg-background pb-4 md:pb-6 w-full md:max-w-3xl">
         <div className="relative w-full flex flex-row justify-center rounded-xl border shadow-sm bg-background p-2">
-          <div className="h-8 w-8 rounded-md bg-muted-foreground/10"></div>
+          <div className="size-8 rounded-md bg-muted-foreground/10"></div>
           <div className="h-8 flex-1 mx-2 rounded-md bg-muted-foreground/10"></div>
-          <div className="h-8 w-8 rounded-md bg-muted-foreground/10"></div>
+          <div className="size-8 rounded-md bg-muted-foreground/10"></div>
         </div>
       </div>
     </div>
