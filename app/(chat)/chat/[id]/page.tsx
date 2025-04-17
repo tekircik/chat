@@ -23,8 +23,7 @@ export async function generateStaticParams() {
 // Add this to enable ISR (Incremental Static Regeneration) with a revalidation period
 export const revalidate = 3600; // Revalidate every hour
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+export default async function Page({ params }: { params: { id: string } }) {
   const { id } = params;
   const chat = await getChatById({ id });
 
