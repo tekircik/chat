@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  target: 'server',
+  output: 'standalone',
   experimental: {
     ppr: true,
   },
