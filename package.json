@@ -19,6 +19,7 @@
     "test": "export PLAYWRIGHT=True && npm exec playwright test --workers=4"
   },
   "dependencies": {
+    "@ai-sdk/openai-compatible": "^0.2.11",
     "@ai-sdk/react": "^1.2.8",
     "@ai-sdk/xai": "^1.2.10",
     "@codemirror/lang-javascript": "^6.2.2",
