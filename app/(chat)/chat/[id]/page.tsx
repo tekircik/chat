@@ -3,11 +3,25 @@ import { notFound } from 'next/navigation';
 
 import { auth } from '@/app/(auth)/auth';
 import { Chat } from '@/components/chat';
-import { getChatById, getMessagesByChatId } from '@/lib/db/queries';
+import { getChatById, getMessagesByChatId, getAllChatIds } from '@/lib/db/queries';
 import { DataStreamHandler } from '@/components/data-stream-handler';
 import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
 import type { DBMessage } from '@/lib/db/schema';
 import type { Attachment, UIMessage } from 'ai';
+
+// Add this function to generate static paths at build time
+export async function generateStaticParams() {
+  // Get all chat IDs for pre-rendering
+  // You may want to limit this to a reasonable number or to public chats only
+  const chatIds = await getAllChatIds();
+  
+  return chatIds.map((chat) => ({
+    id: chat.id,
+  }));
+}
+
+// Add this to enable ISR (Incremental Static Regeneration) with a revalidation period
+export const revalidate = 3600; // Revalidate every hour
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;

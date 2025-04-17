@@ -1,0 +1,6 @@
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+  
+[plugins.inputs]
+  enable_isr = true
+  static_max_age = 86400

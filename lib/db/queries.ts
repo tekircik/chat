@@ -419,3 +419,18 @@ export async function updateChatVisiblityById({
     throw error;
   }
 }
+
+export async function getAllChatIds() {
+  try {
+    // Get all chat IDs for pre-rendering
+    // For production, you may want to limit this or filter by visibility
+    return await db
+      .select({ id: chat.id })
+      .from(chat)
+      .where(eq(chat.visibility, 'public')) // Only pre-render public chats
+      .limit(100); // Limit to a reasonable number to avoid excessive build times
+  } catch (error) {
+    console.error('Failed to get all chat IDs from database');
+    return []; // Return empty array instead of throwing to prevent build failures
+  }
+}
