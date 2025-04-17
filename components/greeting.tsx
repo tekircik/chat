@@ -24,9 +24,6 @@ export const Greeting = () => {
       >
         What&apos;s on your mind?
       </motion.div>
-      <p>
-        Welcome to the AI Chatbot! To start, just start typing below.
-      </p>
     </div>
   );
 };
